@@ -1,0 +1,8 @@
+-a pokerengine
+-I include
+-L libs
+-O 2
+-o objs
+-s c++11
+-V 0.1
+src

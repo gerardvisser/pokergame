@@ -1,0 +1,2 @@
+Initialisaties:
+  CardDeck::init ();
