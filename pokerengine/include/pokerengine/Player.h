@@ -27,6 +27,7 @@ class Player {
 private:
   char* m_name;
   Hand* m_hand;
+  bool m_active;
 
 public:
   Player (const char* name);
@@ -39,9 +40,13 @@ public:
 
   const Card* card (int index) const;
   int handRanking (void) const;
+  bool isActive (void) const;
   const char* name (void) const;
   void newHand (CardDeck* deck);
+  void setActive (bool val);
   void setCard (int index, const Card* card);
+
+  virtual bool isHuman (void) const = 0;
 };
 
 #endif

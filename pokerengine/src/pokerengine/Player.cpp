@@ -21,7 +21,7 @@
 #include <string.h>
 #include <pokerengine/Player.h>
 
-Player::Player (const char* name) {
+Player::Player (const char* name) : m_active (false) {
   m_hand = new Hand ();
   int len = strlen (name) + 1;
   m_name = (char*) malloc (len);
@@ -41,6 +41,10 @@ int Player::handRanking (void) const {
   return m_hand->ranking ();
 }
 
+bool Player::isActive (void) const {
+  return m_active;
+}
+
 const char* Player::name (void) const {
   return m_name;
 }
@@ -49,6 +53,10 @@ void Player::newHand (CardDeck* deck) {
   for (int i = 0; i < 5; ++i) {
     m_hand->setCard (i, deck->drawCard ());
   }
+}
+
+void Player::setActive (bool val) {
+  m_active = val;
 }
 
 void Player::setCard (int index, const Card* card) {

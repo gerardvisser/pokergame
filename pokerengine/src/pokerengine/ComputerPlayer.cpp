@@ -17,34 +17,14 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include <stdlib.h>
-#include <pokerengine/Game.h>
-#include <pokerengine/HumanPlayer.h>
 #include "ComputerPlayer.h"
 
-Game::Game (void) {
-  m_cardDeck = new CardDeck ();
-  m_players[0] = new ComputerPlayer ("Gene");
-  m_players[1] = new ComputerPlayer ("Otto");
-  m_players[2] = new ComputerPlayer ("Frank");
-  m_players[3] = new HumanPlayer ("Whitey");
+ComputerPlayer::ComputerPlayer (const char* name) : Player (name) {
 }
 
-Game::~Game (void) {
-  for (int i = 0; i < 4; ++i) {
-    delete m_players[i];
-  }
-  delete m_cardDeck;
+ComputerPlayer::~ComputerPlayer (void) {
 }
 
-void Game::deal (void) {
-  m_cardDeck->shuffle ();
-  for (int i = 0; i < 4; ++i) {
-    m_players[i]->newHand (m_cardDeck);
-    m_players[i]->setActive (true);
-  }
-}
-
-const Player* const * Game::players (void) const {
-  return m_players;
+bool ComputerPlayer::isHuman (void) const {
+  return false;
 }
