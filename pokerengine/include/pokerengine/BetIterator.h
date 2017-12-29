@@ -17,36 +17,25 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef POKERENGINE__GAME_INCLUDED
-#define POKERENGINE__GAME_INCLUDED
+#ifndef POKERENGINE__BET_ITERATOR_INCLUDED
+#define POKERENGINE__BET_ITERATOR_INCLUDED
 
-#include <pokerengine/Player.h>
+#include <pokerengine/Game.h>
 
-class Game {
+class BetIterator {
 private:
-  CardDeck* m_cardDeck;
-  Player* m_players[4];
-  int m_dealerIndex;
-  int m_maxBet;
-  int m_pot;
+  Player* wm_players[4];
+  const int& m_maxBet;
+  int m_index;
 
 public:
-  Game (void);
-  Game (const Game&) = delete;
-  Game (Game&&) = delete;
-  ~Game (void);
+  BetIterator (const Game* game);
 
-  Game& operator= (const Game&) = delete;
-  Game& operator= (Game&&) = delete;
+  bool hasNext (void);
+  Player* next (void);
 
-  void addToMaxBet (int val);
-  void deal (void);
-  const Player* dealer (void) const;
-  int maxBet (void) const;
-  const Player* const * players (void) const;
-  int pot (void) const;
-
-  friend class BetIterator;
+private:
+  bool bettingDone (void);
 };
 
 #endif
