@@ -26,6 +26,9 @@ class Game {
 private:
   CardDeck* m_cardDeck;
   Player* m_players[4];
+  int m_dealerIndex;
+  int m_maxBet;
+  int m_pot;
 
 public:
   Game (void);
@@ -36,8 +39,14 @@ public:
   Game& operator= (const Game&) = delete;
   Game& operator= (Game&&) = delete;
 
+  void addToMaxBet (int val);
   void deal (void);
+  const Player* dealer (void) const;
+  int maxBet (void) const;
   const Player* const * players (void) const;
+  int pot (void) const;
+
+  //friend class BetIterator;
 };
 
 #endif

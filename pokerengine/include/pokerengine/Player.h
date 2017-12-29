@@ -27,10 +27,12 @@ class Player {
 private:
   char* m_name;
   Hand* m_hand;
+  int m_totalBet;
+  int m_money;
   bool m_active;
 
 public:
-  Player (const char* name);
+  Player (const char* name, int money = 1200);
   Player (const Player&) = delete;
   Player (Player&&) = delete;
   virtual ~Player (void);
@@ -38,15 +40,24 @@ public:
   Player& operator= (const Player&) = delete;
   Player& operator= (Player&&) = delete;
 
+  void addMoney (int val);
   const Card* card (int index) const;
+  void clearTotalBet (void);
   int handRanking (void) const;
   bool isActive (void) const;
+  int money (void) const;
   const char* name (void) const;
   void newHand (CardDeck* deck);
+  void removeMoney (int val);
   void setActive (bool val);
   void setCard (int index, const Card* card);
+  int totalBet (void) const;
 
+  virtual int getBet (int callAmount, bool canRaise) = 0;
   virtual bool isHuman (void) const = 0;
+
+protected:
+  void increaseTotalBet (int val);
 };
 
 #endif

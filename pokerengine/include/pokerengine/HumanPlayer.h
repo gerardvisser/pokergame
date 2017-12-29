@@ -23,11 +23,18 @@
 #include <pokerengine/Player.h>
 
 class HumanPlayer : public Player {
+private:
+  int m_raise;
+
 public:
   HumanPlayer (const char* name);
   virtual ~HumanPlayer (void);
 
+  void call (void);
+  int getBet (int callAmount, bool canRaise) override;
   bool isHuman (void) const override;
+  int raise (void);
+  void resetRaise (void);
 };
 
 #endif

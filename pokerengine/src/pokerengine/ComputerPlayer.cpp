@@ -18,11 +18,23 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ComputerPlayer.h"
+#include "util/random.h"
 
 ComputerPlayer::ComputerPlayer (const char* name) : Player (name) {
 }
 
 ComputerPlayer::~ComputerPlayer (void) {
+}
+
+int ComputerPlayer::getBet (int callAmount, bool canRaise) {
+  /* TODO: To be improved.  */
+  int result = pokerengine::randomInt (4 + callAmount);
+  if (result < callAmount)
+    return 0;
+  if (!canRaise)
+    result = callAmount;
+  increaseTotalBet (result);
+  return result;
 }
 
 bool ComputerPlayer::isHuman (void) const {

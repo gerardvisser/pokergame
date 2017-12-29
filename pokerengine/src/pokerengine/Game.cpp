@@ -22,29 +22,56 @@
 #include <pokerengine/HumanPlayer.h>
 #include "ComputerPlayer.h"
 
+#define CHIP_VALUE   12
+#define PLAYER_COUNT 4
+
 Game::Game (void) {
   m_cardDeck = new CardDeck ();
   m_players[0] = new ComputerPlayer ("Gene");
   m_players[1] = new ComputerPlayer ("Otto");
   m_players[2] = new ComputerPlayer ("Frank");
   m_players[3] = new HumanPlayer ("Whitey");
+  m_dealerIndex = 0;
+  m_pot = 0;
 }
 
 Game::~Game (void) {
-  for (int i = 0; i < 4; ++i) {
+  for (int i = 0; i < PLAYER_COUNT; ++i) {
     delete m_players[i];
   }
   delete m_cardDeck;
 }
 
+void Game::addToMaxBet (int val) {
+  m_maxBet += val;
+}
+
 void Game::deal (void) {
   m_cardDeck->shuffle ();
-  for (int i = 0; i < 4; ++i) {
+  for (int i = 0; i < PLAYER_COUNT; ++i) {
+    m_players[i]->removeMoney (CHIP_VALUE);
+    m_pot += CHIP_VALUE;
     m_players[i]->newHand (m_cardDeck);
     m_players[i]->setActive (true);
+    m_players[i]->clearTotalBet ();
   }
+  m_maxBet = 0;
+  ++m_dealerIndex;
+  m_dealerIndex %= PLAYER_COUNT;
+}
+
+const Player* Game::dealer (void) const {
+  return m_players[m_dealerIndex];
+}
+
+int Game::maxBet (void) const {
+  return m_maxBet;
 }
 
 const Player* const * Game::players (void) const {
   return m_players;
+}
+
+int Game::pot (void) const {
+  return m_pot;
 }

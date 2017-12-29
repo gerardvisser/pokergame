@@ -27,6 +27,7 @@ public:
   ComputerPlayer (const char* name);
   virtual ~ComputerPlayer (void);
 
+  int getBet (int callAmount, bool canRaise) override;
   bool isHuman (void) const override;
 };
 

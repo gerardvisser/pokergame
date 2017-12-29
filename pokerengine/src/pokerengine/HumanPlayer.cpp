@@ -25,6 +25,30 @@ HumanPlayer::HumanPlayer (const char* name) : Player (name) {
 HumanPlayer::~HumanPlayer (void) {
 }
 
+void HumanPlayer::call (void) {
+  m_raise = 0;
+}
+
+int HumanPlayer::getBet (int callAmount, bool canRaise) {
+  if (m_raise == -1)
+    return 0;
+  int result = callAmount + m_raise;
+  increaseTotalBet (result);
+  return result;
+}
+
 bool HumanPlayer::isHuman (void) const {
   return true;
+}
+
+int HumanPlayer::raise (void) {
+  if (m_raise < 1)
+    m_raise = 1;
+  else
+    ++m_raise;
+  return m_raise;
+}
+
+void HumanPlayer::resetRaise (void) {
+  m_raise = -1;
 }
