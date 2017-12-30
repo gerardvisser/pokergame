@@ -17,6 +17,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#include "GameThread.h"
 #include "PokerTable.h"
 #include <pokerengine/CardDeck.h>
 
@@ -33,6 +34,7 @@ PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game
 
   wm_deal = new QPushButton ("Deal", this);
   wm_deal->setGeometry (20, playerViewHeight * 4 + 25, 100, 30);
+  wm_deal->setEnabled (false);
 
   wm_bet = new QPushButton ("Bet/Raise", this);
   wm_bet->setGeometry (20 + 100 + 5, playerViewHeight * 4 + 25, 100, 30);
@@ -46,16 +48,42 @@ PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game
   wm_done->setGeometry (20 + 3 * (100 + 5), playerViewHeight * 4 + 25, 100, 30);
   wm_done->setEnabled (false);
 
-  /*QObject::*/connect (wm_deal, SIGNAL (clicked (bool)), this, SLOT (onDealClicked (bool)));
-  QObject::connect (wm_bet, SIGNAL (clicked (bool)), this, SLOT (onBetClicked (bool)));
-  QObject::connect (wm_call, SIGNAL (clicked (bool)), this, SLOT (onCallClicked (bool)));
-  QObject::connect (wm_done, SIGNAL (clicked (bool)), this, SLOT (onDoneClicked (bool)));
+  connect (wm_deal, SIGNAL (clicked (bool)), this, SLOT (onDealClicked (bool)));
+  connect (wm_bet, SIGNAL (clicked (bool)), this, SLOT (onBetClicked (bool)));
+  connect (wm_call, SIGNAL (clicked (bool)), this, SLOT (onCallClicked (bool)));
+  connect (wm_done, SIGNAL (clicked (bool)), this, SLOT (onDoneClicked (bool)));
+
+  m_gameThread = new GameThread (this);
+  m_gameThread->start ();
+
 
   QSize qsize = this->size ();
   printf ("WIDTH=%d, HEIGHT=%d\n", qsize.width (), qsize.height ());
 }
 
 PokerTable::~PokerTable (void) {
+  /* TODO: How do we make sure thread has ended??  */
+  delete m_gameThread;
+}
+
+QPushButton* PokerTable::betButton (void) {
+  return wm_bet;
+}
+
+QPushButton* PokerTable::callButton (void) {
+  return wm_call;
+}
+
+QPushButton* PokerTable::dealButton (void) {
+  return wm_deal;
+}
+
+QPushButton* PokerTable::doneButton (void) {
+  return wm_done;
+}
+
+Game* PokerTable::game (void) const {
+  return wm_game;
 }
 
 void PokerTable::onBetClicked (bool checked) {

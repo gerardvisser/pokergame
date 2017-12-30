@@ -26,6 +26,10 @@
 #define CARD_HEIGHT 96
 #define CARD_WIDTH  71
 
+#define PADDING_LEFT 2
+#define PADDING_TOP  2
+
+
 static QPixmap getCardImage (const Card* card) {
   if (card == NULL) {
     return pixmaps::greyCardBackImage ();
@@ -39,26 +43,36 @@ PlayerView::PlayerView (const Player* player, QWidget* parent) : QFrame (parent)
   for (int i = 0; i < 5; ++i) {
     wm_cardViews[i] = new QLabel (this);
     wm_cardViews[i]->setPixmap (getCardImage (player->card (i)));
-    wm_cardViews[i]->setGeometry (i * (CARD_WIDTH + 5), 0, CARD_WIDTH, CARD_HEIGHT);
+    wm_cardViews[i]->setGeometry (PADDING_LEFT + i * (CARD_WIDTH + 5), PADDING_TOP, CARD_WIDTH, CARD_HEIGHT);
   }
 
   QFont font ("FreeSans", 12);
   wm_name = new QLabel (this);
   wm_name->setText (player->name ());
-  wm_name->move (5 * (CARD_WIDTH + 5) + 5, 0);
+  wm_name->move (PADDING_LEFT + 5 * (CARD_WIDTH + 5) + 5, PADDING_TOP);
   wm_name->setFont (font);
 
   wm_money = new QLabel (this);
-  wm_money->move (5 * (CARD_WIDTH + 5) + 5 + 200, 0);
+  wm_money->move (PADDING_LEFT + 5 * (CARD_WIDTH + 5) + 5 + 200, PADDING_TOP);
   wm_money->setFont (font);
 
   QString str;
-  str.sprintf ("\342\202\254 %d", 1200);
+  str.sprintf ("\342\202\254 %d", player->money ());
   wm_money->setText (str);
 
-  //wm_name->setStyleSheet ("background-color: #A0FFA0;");
+  wm_action = new QLabel (this);
+  wm_action->setFixedWidth (200);
+  wm_action->move (PADDING_LEFT + 5 * (CARD_WIDTH + 5) + 5, PADDING_TOP + 18);
+  wm_action->setFont (font);
 
-  //setStyleSheet (".PlayerView {border: 2px solid #E00000;}");
+  // /*wm_name->*/setStyleSheet ("background-color: #A0FFA0;");
+  //setStyleSheet ("background-color: #F0F0F0;");
+
+  //setStyleSheet (".PlayerView {border: 2px solid #000000;}");
+}
+
+void PlayerView::updateAction (const char* str) {
+  wm_action->setText (str);
 }
 
 void PlayerView::updateCardViews (void) {

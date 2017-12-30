@@ -25,10 +25,13 @@
 #include <pokerengine/Game.h>
 #include "PlayerView.h"
 
+class GameThread;
+
 class PokerTable : public QWidget {
   Q_OBJECT
 
 private:
+  GameThread* m_gameThread;
   PlayerView* wm_playerView[4];
   QPushButton* wm_deal;
   QPushButton* wm_bet;
@@ -39,6 +42,12 @@ private:
 public:
   explicit PokerTable (Game* game, QWidget* parent = 0);
   virtual ~PokerTable (void);
+
+  QPushButton* betButton (void);
+  QPushButton* callButton (void);
+  QPushButton* dealButton (void);
+  QPushButton* doneButton (void);
+  Game* game (void) const;
 
 signals:
 

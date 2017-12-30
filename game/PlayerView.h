@@ -32,11 +32,13 @@ private:
   QLabel* wm_cardViews[5];
   QLabel* wm_name;
   QLabel* wm_money;
+  QLabel* wm_action;
 
 public:
   explicit PlayerView (const Player* player, QWidget* parent = 0);
 
   void updateCardViews (void);
+  void updateAction (const char* str);
 
 signals:
 

@@ -42,9 +42,9 @@ public:
 
   void run (void) override;
 
-signals:
-
-public slots:
+private:
+  void doBetting (void);
+  void waitForHumanPlayer (bool canCall, bool canRaise);
 };
 
 #endif
