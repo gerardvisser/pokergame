@@ -20,7 +20,6 @@
 #ifndef PLAYER_VIEW_INCLUDED
 #define PLAYER_VIEW_INCLUDED
 
-#include <QFrame>
 #include <QLabel>
 #include <pokerengine/Player.h>
 
@@ -35,10 +34,11 @@ private:
   QLabel* wm_action;
 
 public:
-  explicit PlayerView (const Player* player, QWidget* parent = 0);
+  explicit PlayerView (const Player* player, const QFont& font, QWidget* parent);
 
   void updateCardViews (void);
   void updateAction (QString str);
+  void updateMoney (void);
 
 signals:
 

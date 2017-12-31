@@ -21,8 +21,6 @@
 #include "PlayerView.h"
 #include "pixmaps.h"
 
-#include <QFont>
-
 #define CARD_HEIGHT 96
 #define CARD_WIDTH  71
 
@@ -37,7 +35,7 @@ static QPixmap getCardImage (const Card* card) {
   return pixmaps::cardImage (card->id ());
 }
 
-PlayerView::PlayerView (const Player* player, QWidget* parent) : QFrame (parent), m_player (player) {
+PlayerView::PlayerView (const Player* player, const QFont& font, QWidget* parent) : QFrame (parent), m_player (player) {
   setFixedSize (650, 100);
 
   for (int i = 0; i < 5; ++i) {
@@ -46,29 +44,27 @@ PlayerView::PlayerView (const Player* player, QWidget* parent) : QFrame (parent)
     wm_cardViews[i]->setGeometry (PADDING_LEFT + i * (CARD_WIDTH + 5), PADDING_TOP, CARD_WIDTH, CARD_HEIGHT);
   }
 
-  QFont font ("FreeSans", 12);
   wm_name = new QLabel (this);
   wm_name->setText (player->name ());
   wm_name->move (PADDING_LEFT + 5 * (CARD_WIDTH + 5) + 5, PADDING_TOP);
   wm_name->setFont (font);
 
   wm_money = new QLabel (this);
+  wm_money->setFixedWidth (61);
   wm_money->move (PADDING_LEFT + 5 * (CARD_WIDTH + 5) + 5 + 200, PADDING_TOP);
   wm_money->setFont (font);
-
-  QString str;
-  str.sprintf ("\342\202\254 %d", player->money ());
-  wm_money->setText (str);
+  wm_money->setAlignment (Qt::AlignRight);
+  updateMoney ();
 
   wm_action = new QLabel (this);
   wm_action->setFixedWidth (200);
   wm_action->move (PADDING_LEFT + 5 * (CARD_WIDTH + 5) + 5, PADDING_TOP + 18);
   wm_action->setFont (font);
 
-  // /*wm_name->*/setStyleSheet ("background-color: #A0FFA0;");
   //setStyleSheet ("background-color: #F0F0F0;");
 
-  //setStyleSheet (".PlayerView {border: 2px solid #000000;}");
+  //setStyleSheet (".PlayerView {border: 1px solid #000000;}");
+  //wm_money->setStyleSheet ("border: 1px solid #E00000;");
 }
 
 void PlayerView::updateAction (QString str) {
@@ -79,4 +75,10 @@ void PlayerView::updateCardViews (void) {
   for (int i = 0; i < 5; ++i) {
     wm_cardViews[i]->setPixmap (getCardImage (m_player->card (i)));
   }
+}
+
+void PlayerView::updateMoney (void) {
+  QString str;
+  str.sprintf ("\342\202\254 %d", m_player->money ());
+  wm_money->setText (str);
 }

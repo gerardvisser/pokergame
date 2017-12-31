@@ -44,6 +44,7 @@ public:
 
 signals:
   void playerAction (const Player* player, QString str);
+  void playerMoneyUpdated (const Player* player);
 
 private:
   void doBetting (void);

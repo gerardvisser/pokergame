@@ -28,6 +28,7 @@ GameThread::GameThread (PokerTable* pokertable) : wm_pokertable (pokertable) {
   m_mutex = new QMutex ();
 
   connect (this, SIGNAL (playerAction (const Player*, QString)), pokertable, SLOT (updatePlayerAction (const Player*, QString)));
+  connect (this, SIGNAL (playerMoneyUpdated (const Player*)), pokertable, SLOT (updatePlayerMoney (const Player*)));
 }
 
 GameThread::~GameThread (void) {
@@ -78,7 +79,7 @@ void GameThread::doBetting (void) {
       }
       player->removeMoney (game->chipValue () * bet);
       game->addToPot (game->chipValue () * bet);
-      /* TODO: Update money of player and pot in screen.  */
+      emit playerMoneyUpdated (player);
     }
     emit playerAction (player, action);
 

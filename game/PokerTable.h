@@ -38,6 +38,7 @@ private:
   QPushButton* wm_bet;
   QPushButton* wm_call;
   QPushButton* wm_done;
+  QLabel* wm_pot;
   Game* wm_game;
 
 public:
@@ -58,6 +59,7 @@ private slots:
   void onDealClicked (bool checked = false);
   void onDoneClicked (bool checked = false);
   void updatePlayerAction (const Player* player, QString str);
+  void updatePlayerMoney (const Player* player);
 };
 
 #endif

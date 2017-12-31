@@ -23,30 +23,49 @@
 
 #include <stdio.h>
 
+#define BUTTON_HEIGHT 30
+#define BUTTON_WIDTH  100
+#define PADDING_LEFT  20
+#define PADDING_TOP   20
+
 PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game (game) {
   const int playerViewHeight = 106;
+  QFont font ("FreeSans", 12);
 
   const Player* const * players = game->players ();
   for (int i = 0; i < 4; ++i) {
-    PlayerView* playerView = new PlayerView (players[i], this);
-    playerView->move (20, playerViewHeight * i + 20);
+    PlayerView* playerView = new PlayerView (players[i], font, this);
+    playerView->move (PADDING_LEFT, PADDING_TOP + playerViewHeight * i);
     m_playerviews[players[i]] = playerView;
   }
 
+  QLabel* label = new QLabel ("Pot", this);
+  label->move (PADDING_LEFT + 387, PADDING_TOP + playerViewHeight * 4 + 2);
+  label->setFont (font);
+
+  QString str;
+  str.sprintf ("\342\202\254 %d", game->pot ());
+  wm_pot = new QLabel (this);
+  wm_pot->setFixedWidth (61);
+  wm_pot->move (PADDING_LEFT + 587, PADDING_TOP + playerViewHeight * 4 + 2);
+  wm_pot->setAlignment (Qt::AlignRight);
+  wm_pot->setFont (font);
+  wm_pot->setText (str);
+
   wm_deal = new QPushButton ("Deal", this);
-  wm_deal->setGeometry (20, playerViewHeight * 4 + 25, 100, 30);
+  wm_deal->setGeometry (PADDING_LEFT, PADDING_TOP + playerViewHeight * 4 + 28, BUTTON_WIDTH, BUTTON_HEIGHT);
   wm_deal->setEnabled (false);
 
   wm_bet = new QPushButton ("Bet/Raise", this);
-  wm_bet->setGeometry (20 + 100 + 5, playerViewHeight * 4 + 25, 100, 30);
+  wm_bet->setGeometry (PADDING_LEFT + BUTTON_WIDTH + 5, PADDING_TOP + playerViewHeight * 4 + 28, BUTTON_WIDTH, BUTTON_HEIGHT);
   wm_bet->setEnabled (false);
 
   wm_call = new QPushButton ("Call", this);
-  wm_call->setGeometry (20 + 2 * (100 + 5), playerViewHeight * 4 + 25, 100, 30);
+  wm_call->setGeometry (PADDING_LEFT + 2 * (BUTTON_WIDTH + 5), PADDING_TOP + playerViewHeight * 4 + 28, BUTTON_WIDTH, BUTTON_HEIGHT);
   wm_call->setEnabled (false);
 
   wm_done = new QPushButton ("Done", this);
-  wm_done->setGeometry (20 + 3 * (100 + 5), playerViewHeight * 4 + 25, 100, 30);
+  wm_done->setGeometry (PADDING_LEFT + 3 * (BUTTON_WIDTH + 5), PADDING_TOP + playerViewHeight * 4 + 28, BUTTON_WIDTH, BUTTON_HEIGHT);
   wm_done->setEnabled (false);
 
   connect (wm_deal, SIGNAL (clicked (bool)), this, SLOT (onDealClicked (bool)));
@@ -111,4 +130,11 @@ void PokerTable::onDoneClicked (bool checked) {
 
 void PokerTable::updatePlayerAction (const Player* player, QString str) {
   m_playerviews.find (player)->second->updateAction (str);
+}
+
+void PokerTable::updatePlayerMoney (const Player* player) {
+  QString str;
+  str.sprintf ("\342\202\254 %d", wm_game->pot ());
+  wm_pot->setText (str);
+  m_playerviews.find (player)->second->updateMoney ();
 }
