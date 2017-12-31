@@ -42,6 +42,9 @@ public:
 
   void run (void) override;
 
+signals:
+  void playerAction (const Player* player, QString str);
+
 private:
   void doBetting (void);
   void waitForHumanPlayer (bool canCall, bool canRaise);

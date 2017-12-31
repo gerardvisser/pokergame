@@ -26,6 +26,8 @@
 GameThread::GameThread (PokerTable* pokertable) : wm_pokertable (pokertable) {
   m_cond = new QWaitCondition ();
   m_mutex = new QMutex ();
+
+  connect (this, SIGNAL (playerAction (const Player*, QString)), pokertable, SLOT (updatePlayerAction (const Player*, QString)));
 }
 
 GameThread::~GameThread (void) {
@@ -47,36 +49,38 @@ void GameThread::doBetting (void) {
     if (player->isHuman ()) {
       HumanPlayer* humanPlayer = dynamic_cast<HumanPlayer*> (player);
       humanPlayer->resetRaise ();
-      /* TODO: Clear action text of player.  */
+      emit playerAction (player, "");
       waitForHumanPlayer (callAmount > 0, raiseCount < RAISE_COUNT_MAX);
     }
 
+    QString action;
     int bet = player->getBet (callAmount, raiseCount < RAISE_COUNT_MAX);
     if (bet < callAmount) {
       player->setActive (false);
-      /* TODO: action text: FOLDS.  */
+      action = "folds";
     } else if (bet == 0) {
       if (game->maxBet () > 0) {
-        /* TODO: action text: CHECKS.  */
+        action = "checks";
       } else {
-        /* TODO: action text: PASSES.  */
+        action = "passes";
       }
     } else {
       if (game->maxBet () == 0) {
         /* callAmount must be 0 here.  */
-        /* TODO: action text: BETS.  */
+        action.sprintf ("bets \342\202\254 %d", bet * game->chipValue ());
         game->addToMaxBet (bet);
       } else if (bet > callAmount) {
-        /* TODO: action text: RAISES.  */
+        action.sprintf ("raises \342\202\254 %d", (bet - callAmount) * game->chipValue ());
         game->addToMaxBet (bet - callAmount);
         ++raiseCount;
       } else {
-        /* TODO: action text: CALLS.  */
+        action = "calls";
       }
-//      player->removeMoney (CHIP_VALUE * bet);
-      /* TODO: Add (CHIP_VALUE * bet) to pot. */
+      player->removeMoney (game->chipValue () * bet);
+      game->addToPot (game->chipValue () * bet);
       /* TODO: Update money of player and pot in screen.  */
     }
+    emit playerAction (player, action);
 
     /* TODO: Wait for a second and then dehighlight player...  */
   }

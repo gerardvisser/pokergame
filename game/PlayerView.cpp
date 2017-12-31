@@ -71,7 +71,7 @@ PlayerView::PlayerView (const Player* player, QWidget* parent) : QFrame (parent)
   //setStyleSheet (".PlayerView {border: 2px solid #000000;}");
 }
 
-void PlayerView::updateAction (const char* str) {
+void PlayerView::updateAction (QString str) {
   wm_action->setText (str);
 }
 

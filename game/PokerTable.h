@@ -20,6 +20,7 @@
 #ifndef POKER_TABLE_INCLUDED
 #define POKER_TABLE_INCLUDED
 
+#include <map>
 #include <QWidget>
 #include <QPushButton>
 #include <pokerengine/Game.h>
@@ -31,8 +32,8 @@ class PokerTable : public QWidget {
   Q_OBJECT
 
 private:
+  std::map<const Player*, PlayerView*> m_playerviews;
   GameThread* m_gameThread;
-  PlayerView* wm_playerView[4];
   QPushButton* wm_deal;
   QPushButton* wm_bet;
   QPushButton* wm_call;
@@ -56,6 +57,7 @@ private slots:
   void onCallClicked (bool checked = false);
   void onDealClicked (bool checked = false);
   void onDoneClicked (bool checked = false);
+  void updatePlayerAction (const Player* player, QString str);
 };
 
 #endif

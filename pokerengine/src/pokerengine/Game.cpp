@@ -25,7 +25,7 @@
 #define CHIP_VALUE   12
 #define PLAYER_COUNT 4
 
-Game::Game (void) {
+Game::Game (void) : m_chipValue (CHIP_VALUE) {
   m_cardDeck = new CardDeck ();
   m_players[0] = new ComputerPlayer ("Gene");
   m_players[1] = new ComputerPlayer ("Otto");
@@ -46,11 +46,19 @@ void Game::addToMaxBet (int val) {
   m_maxBet += val;
 }
 
+void Game::addToPot (int val) {
+  m_pot += val;
+}
+
+int Game::chipValue (void) const {
+  return m_chipValue;
+}
+
 void Game::deal (void) {
   m_cardDeck->shuffle ();
   for (int i = 0; i < PLAYER_COUNT; ++i) {
-    m_players[i]->removeMoney (CHIP_VALUE);
-    m_pot += CHIP_VALUE;
+    m_players[i]->removeMoney (m_chipValue);
+    m_pot += m_chipValue;
     m_players[i]->newHand (m_cardDeck);
     m_players[i]->setActive (true);
     m_players[i]->clearTotalBet ();

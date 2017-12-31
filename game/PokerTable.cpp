@@ -22,14 +22,15 @@
 #include <pokerengine/CardDeck.h>
 
 #include <stdio.h>
-//#include <unistd.h>
 
 PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game (game) {
   const int playerViewHeight = 106;
 
+  const Player* const * players = game->players ();
   for (int i = 0; i < 4; ++i) {
-    wm_playerView[i] = new PlayerView (game->players ()[i], this);
-    wm_playerView[i]->move (20, playerViewHeight * i + 20);
+    PlayerView* playerView = new PlayerView (players[i], this);
+    playerView->move (20, playerViewHeight * i + 20);
+    m_playerviews[players[i]] = playerView;
   }
 
   wm_deal = new QPushButton ("Deal", this);
@@ -98,24 +99,16 @@ void PokerTable::onDealClicked (bool checked) {
   printf ("Deal clicked.\n");
 
   wm_game->deal ();
-  for (int i = 0; i < 4; ++i) {
-    wm_playerView[i]->updateCardViews ();
+  std::map<const Player*, PlayerView*>::iterator iter;
+  for (iter = m_playerviews.begin (); iter != m_playerviews.end (); ++iter) {
+    iter->second->updateCardViews ();
   }
-
-//  wm_deal->setEnabled (false);
-//  static int count = 0;
-//  ++count;
-//  int id = count;
-//  printf ("Deal clicked (id=%d).\n", id);
-
-//  wm_game->deal ();
-//  for (int i = 0; i < 4; ++i) {
-//    wm_playerView[i]->updateCardViews ();
-//  }
-//  sleep (5);
-//  printf ("Exiting deal (id=%d)\n", id);
 }
 
 void PokerTable::onDoneClicked (bool checked) {
   printf ("Done clicked.\n");
+}
+
+void PokerTable::updatePlayerAction (const Player* player, QString str) {
+  m_playerviews.find (player)->second->updateAction (str);
 }

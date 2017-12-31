@@ -38,7 +38,7 @@ public:
   explicit PlayerView (const Player* player, QWidget* parent = 0);
 
   void updateCardViews (void);
-  void updateAction (const char* str);
+  void updateAction (QString str);
 
 signals:
 
