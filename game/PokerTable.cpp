@@ -23,20 +23,24 @@
 
 #include <stdio.h>
 
-#define BUTTON_HEIGHT 30
-#define BUTTON_WIDTH  100
-#define PADDING_LEFT  20
-#define PADDING_TOP   20
+#define BUTTON_HEIGHT    30
+#define BUTTON_WIDTH     100
+#define PADDING_LEFT     20
+#define PADDING_TOP      20
+
+#define RAISE_AMOUNT_MAX 3
 
 PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game (game) {
   const int playerViewHeight = 106;
   QFont font ("FreeSans", 12);
 
-  const Player* const * players = game->players ();
+  Player* const * players = game->players ();
   for (int i = 0; i < 4; ++i) {
     PlayerView* playerView = new PlayerView (players[i], font, this);
     playerView->move (PADDING_LEFT, PADDING_TOP + playerViewHeight * i);
     m_playerviews[players[i]] = playerView;
+    if (players[i]->isHuman ())
+      wm_humanPlayer = dynamic_cast<HumanPlayer*> (players[i]);
   }
 
   QLabel* label = new QLabel ("Pot", this);
@@ -102,16 +106,41 @@ QPushButton* PokerTable::doneButton (void) {
   return wm_done;
 }
 
+void PokerTable::continueGame (void) {
+  wm_bet->setEnabled (false);
+  wm_call->setEnabled (false);
+  wm_deal->setEnabled (false);
+  wm_done->setEnabled (false);
+  m_gameThread->humanPlayerDone ();
+}
+
 Game* PokerTable::game (void) const {
   return wm_game;
 }
 
 void PokerTable::onBetClicked (bool checked) {
   printf ("Bet/Raise clicked.\n");
+
+  int r = wm_humanPlayer->raise ();
+  if (r >= RAISE_AMOUNT_MAX) {
+    continueGame ();
+  } else {
+    if (wm_call->isEnabled ())
+      wm_call->setEnabled (false);
+    QString action;
+    if (wm_game->maxBet () == 0)
+      action.sprintf ("bets \342\202\254 %d", r * wm_game->chipValue ());
+    else
+      action.sprintf ("raises \342\202\254 %d", r * wm_game->chipValue ());
+    updatePlayerAction (wm_humanPlayer, action);
+  }
 }
 
 void PokerTable::onCallClicked (bool checked) {
   printf ("Call clicked.\n");
+
+  wm_humanPlayer->call ();
+  continueGame ();
 }
 
 void PokerTable::onDealClicked (bool checked) {
@@ -126,6 +155,8 @@ void PokerTable::onDealClicked (bool checked) {
 
 void PokerTable::onDoneClicked (bool checked) {
   printf ("Done clicked.\n");
+
+  continueGame ();
 }
 
 void PokerTable::updatePlayerAction (const Player* player, QString str) {

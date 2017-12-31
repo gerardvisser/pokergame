@@ -76,7 +76,7 @@ int Game::maxBet (void) const {
   return m_maxBet;
 }
 
-const Player* const * Game::players (void) const {
+Player* const * Game::players (void) const {
   return m_players;
 }
 

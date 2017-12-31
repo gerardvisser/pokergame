@@ -18,7 +18,6 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <pokerengine/BetIterator.h>
-#include <pokerengine/HumanPlayer.h>
 #include "GameThread.h"
 
 #define RAISE_COUNT_MAX 3
@@ -85,6 +84,12 @@ void GameThread::doBetting (void) {
 
     /* TODO: Wait for a second and then dehighlight player...  */
   }
+}
+
+void GameThread::humanPlayerDone (void) {
+  m_mutex->lock ();
+  m_cond->wakeOne ();
+  m_mutex->unlock ();
 }
 
 QMutex* GameThread::mutex (void) {

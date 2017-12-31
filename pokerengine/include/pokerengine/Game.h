@@ -46,7 +46,7 @@ public:
   void deal (void);
   const Player* dealer (void) const;
   int maxBet (void) const;
-  const Player* const * players (void) const;
+  Player* const * players (void) const;
   int pot (void) const;
 
   friend class BetIterator;

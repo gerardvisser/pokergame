@@ -37,6 +37,7 @@ public:
   explicit GameThread (PokerTable* pokertable);
   ~GameThread (void) override;
 
+  void humanPlayerDone (void);
   QMutex* mutex (void);
   QWaitCondition* waitCondition (void);
 
