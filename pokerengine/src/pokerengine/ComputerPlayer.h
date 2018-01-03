@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017 Gerard Visser.
+   Copyright (C) 2017, 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ public:
   ComputerPlayer (const char* name);
   virtual ~ComputerPlayer (void);
 
+  const std::vector<int>& cardsToReplace (void) override;
   int getBet (int callAmount, bool canRaise) override;
   bool isHuman (void) const override;
 };

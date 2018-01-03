@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017 Gerard Visser.
+   Copyright (C) 2017, 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,9 +26,11 @@ Player::Player (const char* name, int money) : m_active (false), m_money (money)
   int len = strlen (name) + 1;
   m_name = (char*) malloc (len);
   memcpy (m_name, name, len);
+  m_cardsToReplace = new std::vector<int> ();
 }
 
 Player::~Player (void) {
+  delete m_cardsToReplace;
   delete m_hand;
   free (m_name);
 }

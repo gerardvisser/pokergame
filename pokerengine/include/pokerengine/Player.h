@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017 Gerard Visser.
+   Copyright (C) 2017, 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,10 +20,13 @@
 #ifndef POKERENGINE__PLAYER_INCLUDED
 #define POKERENGINE__PLAYER_INCLUDED
 
+#include <vector>
 #include <pokerengine/CardDeck.h>
 #include <pokerengine/Hand.h>
 
 class Player {
+protected:
+  std::vector<int>* m_cardsToReplace;
 private:
   char* m_name;
   Hand* m_hand;
@@ -53,6 +56,7 @@ public:
   void setCard (int index, const Card* card);
   int totalBet (void) const;
 
+  virtual const std::vector<int>& cardsToReplace (void) = 0;
   virtual int getBet (int callAmount, bool canRaise) = 0;
   virtual bool isHuman (void) const = 0;
 
