@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017 Gerard Visser.
+   Copyright (C) 2017, 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <stddef.h>
+#include "ClickableLabel.h"
 #include "PlayerView.h"
 #include "pixmaps.h"
 
@@ -39,7 +40,12 @@ PlayerView::PlayerView (const Player* player, const QFont& font, QWidget* parent
   setFixedSize (650, 100);
 
   for (int i = 0; i < 5; ++i) {
-    wm_cardViews[i] = new QLabel (this);
+    if (player->isHuman ()) {
+      wm_cardViews[i] = new ClickableLabel (this, i);
+      connect (wm_cardViews[i], SIGNAL (clicked (int)), parent, SLOT (onCardClicked (int)));
+    } else {
+      wm_cardViews[i] = new QLabel (this);
+    }
     wm_cardViews[i]->setPixmap (getCardImage (player->card (i)));
     wm_cardViews[i]->setGeometry (PADDING_LEFT + i * (CARD_WIDTH + 5), PADDING_TOP, CARD_WIDTH, CARD_HEIGHT);
   }

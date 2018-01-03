@@ -17,14 +17,16 @@ SOURCES += \
     PokerTable.cpp \
     pixmaps.cpp \
     PlayerView.cpp \
-    GameThread.cpp
+    GameThread.cpp \
+    ClickableLabel.cpp
 
 HEADERS += \
     Window.h \
     PokerTable.h \
     pixmaps.h \
     PlayerView.h \
-    GameThread.h
+    GameThread.h \
+    ClickableLabel.h
 
 RESOURCES += \
     images.qrc

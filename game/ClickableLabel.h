@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017, 2018 Gerard Visser.
+   Copyright (C) 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,37 +17,25 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef GAME_THREAD_INCLUDED
-#define GAME_THREAD_INCLUDED
+#ifndef CLICKABLE_LABEL_INCLUDED
+#define CLICKABLE_LABEL_INCLUDED
 
-#include <QMutex>
-#include <QThread>
-#include <QWaitCondition>
-#include "PokerTable.h"
+#include <QLabel>
 
-class GameThread : public QThread {
+class ClickableLabel : public QLabel {
   Q_OBJECT
 
 private:
-  QMutex* m_mutex;
-  QWaitCondition* m_cond;
-  PokerTable* wm_pokertable;
+  const int m_id;
 
 public:
-  explicit GameThread (PokerTable* pokertable);
-  ~GameThread (void) override;
-
-  void humanPlayerDone (void);
-  void run (void) override;
+  explicit ClickableLabel (QWidget* parent, int id, Qt::WindowFlags flags = 0);
 
 signals:
-  void enableClickables (int mask);
-  void playerAction (const Player* player, QString str);
-  void playerMoneyUpdated (const Player* player);
+  void clicked (int id);
 
-private:
-  void doBetting (void);
-  void waitForHumanPlayer (bool canCall, bool canRaise);
+protected:
+  void mousePressEvent (QMouseEvent* event) override;
 };
 
 #endif

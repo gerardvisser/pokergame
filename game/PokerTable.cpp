@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017 Gerard Visser.
+   Copyright (C) 2017, 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 
 #define RAISE_AMOUNT_MAX 3
 
-PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game (game) {
+PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game (game), m_cardClickEnabled (false) {
   const int playerViewHeight = 106;
   QFont font ("FreeSans", 12);
 
@@ -90,22 +90,6 @@ PokerTable::~PokerTable (void) {
   delete m_gameThread;
 }
 
-QPushButton* PokerTable::betButton (void) {
-  return wm_bet;
-}
-
-QPushButton* PokerTable::callButton (void) {
-  return wm_call;
-}
-
-QPushButton* PokerTable::dealButton (void) {
-  return wm_deal;
-}
-
-QPushButton* PokerTable::doneButton (void) {
-  return wm_done;
-}
-
 void PokerTable::continueGame (void) {
   wm_bet->setEnabled (false);
   wm_call->setEnabled (false);
@@ -143,6 +127,12 @@ void PokerTable::onCallClicked (bool checked) {
   continueGame ();
 }
 
+void PokerTable::onCardClicked (int index) {
+  if (m_cardClickEnabled) {
+    printf ("Card clicked: %d.\n", index);
+  }
+}
+
 void PokerTable::onDealClicked (bool checked) {
   printf ("Deal clicked.\n");
 
@@ -157,6 +147,19 @@ void PokerTable::onDoneClicked (bool checked) {
   printf ("Done clicked.\n");
 
   continueGame ();
+}
+
+void PokerTable::onEnableClickables (int mask) {
+  if ((mask & ENABLE_BET) != 0)
+    wm_bet->setEnabled (true);
+  if ((mask & ENABLE_CALL) != 0)
+    wm_call->setEnabled (true);
+  if ((mask & ENABLE_CARDS) != 0)
+    m_cardClickEnabled = true;
+  if ((mask & ENABLE_DEAL) != 0)
+    wm_deal->setEnabled (true);
+  if ((mask & ENABLE_DONE) != 0)
+    wm_done->setEnabled (true);
 }
 
 void PokerTable::updatePlayerAction (const Player* player, QString str) {

@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017 Gerard Visser.
+   Copyright (C) 2017, 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ GameThread::GameThread (PokerTable* pokertable) : wm_pokertable (pokertable) {
 
   connect (this, SIGNAL (playerAction (const Player*, QString)), pokertable, SLOT (updatePlayerAction (const Player*, QString)));
   connect (this, SIGNAL (playerMoneyUpdated (const Player*)), pokertable, SLOT (updatePlayerMoney (const Player*)));
+  connect (this, SIGNAL (enableClickables (int)), pokertable, SLOT (onEnableClickables (int)));
 }
 
 GameThread::~GameThread (void) {
@@ -92,24 +93,18 @@ void GameThread::humanPlayerDone (void) {
   m_mutex->unlock ();
 }
 
-QMutex* GameThread::mutex (void) {
-  return m_mutex;
-}
-
 void GameThread::run (void) {
 }
 
-QWaitCondition* GameThread::waitCondition (void) {
-  return m_cond;
-}
-
 void GameThread::waitForHumanPlayer (bool canCall, bool canRaise) {
-  m_mutex->lock ();
-  wm_pokertable->doneButton ()->setEnabled (true);
+  int mask = ENABLE_DONE;
   if (canCall)
-    wm_pokertable->callButton ()->setEnabled (true);
+    mask |= ENABLE_CALL;
   if (canRaise)
-    wm_pokertable->betButton ()->setEnabled (true);
+    mask |= ENABLE_BET;
+  emit enableClickables (mask);
+
+  m_mutex->lock ();
   m_cond->wait (m_mutex);
   m_mutex->unlock ();
 }

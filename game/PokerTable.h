@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017 Gerard Visser.
+   Copyright (C) 2017, 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -27,6 +27,12 @@
 #include <pokerengine/HumanPlayer.h>
 #include "PlayerView.h"
 
+#define ENABLE_BET   1
+#define ENABLE_CALL  2
+#define ENABLE_CARDS 4
+#define ENABLE_DEAL  8
+#define ENABLE_DONE  16
+
 class GameThread;
 
 class PokerTable : public QWidget {
@@ -42,15 +48,12 @@ private:
   QPushButton* wm_done;
   QLabel* wm_pot;
   Game* wm_game;
+  bool m_cardClickEnabled;
 
 public:
   explicit PokerTable (Game* game, QWidget* parent = 0);
   virtual ~PokerTable (void);
 
-  QPushButton* betButton (void);
-  QPushButton* callButton (void);
-  QPushButton* dealButton (void);
-  QPushButton* doneButton (void);
   Game* game (void) const;
 
 signals:
@@ -58,8 +61,10 @@ signals:
 private slots:
   void onBetClicked (bool checked = false);
   void onCallClicked (bool checked = false);
+  void onCardClicked (int index);
   void onDealClicked (bool checked = false);
   void onDoneClicked (bool checked = false);
+  void onEnableClickables (int mask);
   void updatePlayerAction (const Player* player, QString str);
   void updatePlayerMoney (const Player* player);
 
