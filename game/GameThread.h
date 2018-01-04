@@ -47,7 +47,9 @@ signals:
 
 private:
   void doBetting (void);
-  void waitForHumanPlayer (bool canCall, bool canRaise);
+  void doCardReplacement (void);
+  void enableButtonsForBetting (bool canCall, bool canRaise);
+  void waitForHumanPlayer (void);
 };
 
 #endif

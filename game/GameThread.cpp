@@ -18,6 +18,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <pokerengine/BetIterator.h>
+#include <pokerengine/CardDrawIterator.h>
 #include "GameThread.h"
 
 #define RAISE_COUNT_MAX 3
@@ -51,7 +52,8 @@ void GameThread::doBetting (void) {
       HumanPlayer* humanPlayer = dynamic_cast<HumanPlayer*> (player);
       humanPlayer->resetRaise ();
       emit playerAction (player, "");
-      waitForHumanPlayer (callAmount > 0, raiseCount < RAISE_COUNT_MAX);
+      enableButtonsForBetting (callAmount > 0, raiseCount < RAISE_COUNT_MAX);
+      waitForHumanPlayer ();
     }
 
     QString action;
@@ -87,6 +89,50 @@ void GameThread::doBetting (void) {
   }
 }
 
+void GameThread::doCardReplacement (void) {
+  CardDeck& deck = wm_pokertable->game ()->cardDeck ();
+  CardDrawIterator iter (wm_pokertable->game ());
+
+  while (iter.hasNext ()) {
+    Player* player = iter.next ();
+    /* TODO: Highlight player?  */
+
+    if (player->isHuman ()) {
+      HumanPlayer* humanPlayer = dynamic_cast<HumanPlayer*> (player);
+      humanPlayer->clearCardsToReplace ();
+      emit playerAction (player, "");
+      emit enableClickables (ENABLE_DONE | ENABLE_CARDS);
+      waitForHumanPlayer ();
+    }
+
+    const std::vector<int>& cardsToReplace = player->cardsToReplace ();
+    int numberOfCardsToReplace = cardsToReplace.size ();
+    for (int i = 0; i < numberOfCardsToReplace; ++i) {
+      player->setCard (cardsToReplace[i], deck.drawCard ());
+    }
+    QString action;
+    if (numberOfCardsToReplace == 1)
+      action = "replaces 1 card";
+    else
+      action.sprintf ("replaces %d cards", numberOfCardsToReplace);
+    emit playerAction (player, action);
+    if (player->isHuman ()) {
+      /* TODO: Update the player's cards on the screen.  */
+    }
+
+    /* TODO: Wait for a second and then dehighlight player...  */
+  }
+}
+
+void GameThread::enableButtonsForBetting (bool canCall, bool canRaise) {
+  int mask = ENABLE_DONE;
+  if (canCall)
+    mask |= ENABLE_CALL;
+  if (canRaise)
+    mask |= ENABLE_BET;
+  emit enableClickables (mask);
+}
+
 void GameThread::humanPlayerDone (void) {
   m_mutex->lock ();
   m_cond->wakeOne ();
@@ -96,14 +142,7 @@ void GameThread::humanPlayerDone (void) {
 void GameThread::run (void) {
 }
 
-void GameThread::waitForHumanPlayer (bool canCall, bool canRaise) {
-  int mask = ENABLE_DONE;
-  if (canCall)
-    mask |= ENABLE_CALL;
-  if (canRaise)
-    mask |= ENABLE_BET;
-  emit enableClickables (mask);
-
+void GameThread::waitForHumanPlayer (void) {
   m_mutex->lock ();
   m_cond->wait (m_mutex);
   m_mutex->unlock ();

@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017 Gerard Visser.
+   Copyright (C) 2017, 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -48,6 +48,10 @@ void Game::addToMaxBet (int val) {
 
 void Game::addToPot (int val) {
   m_pot += val;
+}
+
+CardDeck& Game::cardDeck (void) const {
+  return *m_cardDeck;
 }
 
 int Game::chipValue (void) const {

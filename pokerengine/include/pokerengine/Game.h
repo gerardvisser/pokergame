@@ -42,6 +42,7 @@ public:
 
   void addToMaxBet (int val);
   void addToPot (int val);
+  CardDeck& cardDeck (void) const;
   int chipValue (void) const;
   void deal (void);
   const Player* dealer (void) const;
