@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017, 2018 Gerard Visser.
+   Copyright (C) 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,40 +17,21 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef POKERENGINE__GAME_INCLUDED
-#define POKERENGINE__GAME_INCLUDED
+#ifndef POKERENGINE__CARD_DRAW_ITERATOR_INCLUDED
+#define POKERENGINE__CARD_DRAW_ITERATOR_INCLUDED
 
-#include <pokerengine/Player.h>
+#include <pokerengine/Game.h>
 
-class Game {
+class CardDrawIterator {
 private:
-  CardDeck* m_cardDeck;
-  Player* m_players[4];
-  const int m_chipValue;
-  int m_dealerIndex;
-  int m_maxBet;
-  int m_pot;
+  Player* wm_players[4];
+  int m_index;
 
 public:
-  Game (void);
-  Game (const Game&) = delete;
-  Game (Game&&) = delete;
-  ~Game (void);
+  CardDrawIterator (const Game* game);
 
-  Game& operator= (const Game&) = delete;
-  Game& operator= (Game&&) = delete;
-
-  void addToMaxBet (int val);
-  void addToPot (int val);
-  int chipValue (void) const;
-  void deal (void);
-  const Player* dealer (void) const;
-  int maxBet (void) const;
-  Player* const * players (void) const;
-  int pot (void) const;
-
-  friend class BetIterator;
-  friend class CardDrawIterator;
+  bool hasNext (void);
+  Player* next (void);
 };
 
 #endif
