@@ -23,7 +23,9 @@
 
 #define RAISE_COUNT_MAX 3
 
-GameThread::GameThread (PokerTable* pokertable) : wm_pokertable (pokertable) {
+class TerminationRequestException {};
+
+GameThread::GameThread (PokerTable* pokertable) : wm_pokertable (pokertable), m_terminationRequested (false) {
   m_cond = new QWaitCondition ();
   m_mutex = new QMutex ();
 
@@ -34,9 +36,16 @@ GameThread::GameThread (PokerTable* pokertable) : wm_pokertable (pokertable) {
 }
 
 GameThread::~GameThread (void) {
-  /* TODO: Make sure mutex isn't locked.  */
   delete m_mutex;
   delete m_cond;
+}
+
+void GameThread::checkForTerminationRequest (void) {
+  m_mutex->lock ();
+  bool terminationRequested = m_terminationRequested;
+  m_mutex->unlock ();
+  if (terminationRequested)
+    throw TerminationRequestException ();
 }
 
 void GameThread::doBetting (void) {
@@ -140,11 +149,22 @@ void GameThread::humanPlayerDone (void) {
   m_mutex->unlock ();
 }
 
+void GameThread::requestTermination (void) {
+  m_mutex->lock ();
+  m_terminationRequested = true;
+  m_cond->wakeOne ();
+  m_mutex->unlock ();
+}
+
 void GameThread::run (void) {
+  try {
+  } catch (TerminationRequestException ignore) {
+  }
 }
 
 void GameThread::waitForHumanPlayer (void) {
   m_mutex->lock ();
   m_cond->wait (m_mutex);
   m_mutex->unlock ();
+  checkForTerminationRequest ();
 }

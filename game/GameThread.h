@@ -32,12 +32,14 @@ private:
   QMutex* m_mutex;
   QWaitCondition* m_cond;
   PokerTable* wm_pokertable;
+  bool m_terminationRequested;
 
 public:
   explicit GameThread (PokerTable* pokertable);
   ~GameThread (void) override;
 
   void humanPlayerDone (void);
+  void requestTermination (void);
   void run (void) override;
 
 signals:
@@ -47,6 +49,7 @@ signals:
   void updateCardViews (const Player* player);
 
 private:
+  void checkForTerminationRequest (void);
   void doBetting (void);
   void doCardReplacement (void);
   void enableButtonsForBetting (bool canCall, bool canRaise);

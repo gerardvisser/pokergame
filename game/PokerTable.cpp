@@ -84,7 +84,8 @@ PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game
 }
 
 PokerTable::~PokerTable (void) {
-  /* TODO: How do we make sure thread has ended??  */
+  m_gameThread->requestTermination ();
+  m_gameThread->wait ();
   delete m_gameThread;
 }
 
