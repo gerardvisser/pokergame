@@ -44,6 +44,7 @@ signals:
   void enableClickables (int mask);
   void playerAction (const Player* player, QString str);
   void playerMoneyUpdated (const Player* player);
+  void updateCardViews (const Player* player);
 
 private:
   void doBetting (void);

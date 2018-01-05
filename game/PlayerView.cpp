@@ -29,11 +29,12 @@
 #define PADDING_TOP  2
 
 
-static QPixmap getCardImage (const Card* card) {
-  if (card == NULL) {
+static QPixmap getCardImage (const Card* card, bool showFront) {
+  if (card == NULL)
     return pixmaps::greyCardBackImage ();
-  }
-  return pixmaps::cardImage (card->id ());
+  if (showFront)
+    return pixmaps::cardImage (card->id ());
+  return pixmaps::cardBackImage ();
 }
 
 PlayerView::PlayerView (const Player* player, const QFont& font, QWidget* parent) : QFrame (parent), m_player (player) {
@@ -46,7 +47,7 @@ PlayerView::PlayerView (const Player* player, const QFont& font, QWidget* parent
     } else {
       wm_cardViews[i] = new QLabel (this);
     }
-    wm_cardViews[i]->setPixmap (getCardImage (player->card (i)));
+    wm_cardViews[i]->setPixmap (getCardImage (player->card (i), player->isHuman ()));
     wm_cardViews[i]->setGeometry (PADDING_LEFT + i * (CARD_WIDTH + 5), PADDING_TOP, CARD_WIDTH, CARD_HEIGHT);
   }
 
@@ -77,9 +78,13 @@ void PlayerView::updateAction (QString str) {
   wm_action->setText (str);
 }
 
-void PlayerView::updateCardViews (void) {
+void PlayerView::updateCardView (int index) {
+  wm_cardViews[index]->setPixmap (getCardImage (m_player->card (index), false));
+}
+
+void PlayerView::updateCardViews (bool showFront) {
   for (int i = 0; i < 5; ++i) {
-    wm_cardViews[i]->setPixmap (getCardImage (m_player->card (i)));
+    wm_cardViews[i]->setPixmap (getCardImage (m_player->card (i), showFront));
   }
 }
 

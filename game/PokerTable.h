@@ -65,11 +65,13 @@ private slots:
   void onDealClicked (bool checked = false);
   void onDoneClicked (bool checked = false);
   void onEnableClickables (int mask);
+  void onUpdateCardViews (const Player* player);
   void updatePlayerAction (const Player* player, QString str);
   void updatePlayerMoney (const Player* player);
 
 private:
   void continueGame (void);
+  void updatePotView (void);
 };
 
 #endif

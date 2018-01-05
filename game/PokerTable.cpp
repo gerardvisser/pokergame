@@ -47,14 +47,12 @@ PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game
   label->move (PADDING_LEFT + 387, PADDING_TOP + playerViewHeight * 4 + 2);
   label->setFont (font);
 
-  QString str;
-  str.sprintf ("\342\202\254 %d", game->pot ());
   wm_pot = new QLabel (this);
   wm_pot->setFixedWidth (61);
   wm_pot->move (PADDING_LEFT + 587, PADDING_TOP + playerViewHeight * 4 + 2);
   wm_pot->setAlignment (Qt::AlignRight);
   wm_pot->setFont (font);
-  wm_pot->setText (str);
+  updatePotView ();
 
   wm_deal = new QPushButton ("Deal", this);
   wm_deal->setGeometry (PADDING_LEFT, PADDING_TOP + playerViewHeight * 4 + 28, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -91,6 +89,7 @@ PokerTable::~PokerTable (void) {
 }
 
 void PokerTable::continueGame (void) {
+  m_cardClickEnabled = false;
   wm_bet->setEnabled (false);
   wm_call->setEnabled (false);
   wm_deal->setEnabled (false);
@@ -103,8 +102,6 @@ Game* PokerTable::game (void) const {
 }
 
 void PokerTable::onBetClicked (bool checked) {
-  printf ("Bet/Raise clicked.\n");
-
   int r = wm_humanPlayer->raise ();
   if (r >= RAISE_AMOUNT_MAX) {
     continueGame ();
@@ -121,31 +118,29 @@ void PokerTable::onBetClicked (bool checked) {
 }
 
 void PokerTable::onCallClicked (bool checked) {
-  printf ("Call clicked.\n");
-
   wm_humanPlayer->call ();
   continueGame ();
 }
 
 void PokerTable::onCardClicked (int index) {
   if (m_cardClickEnabled) {
-    printf ("Card clicked: %d.\n", index);
+    if (wm_humanPlayer->replaceCard (index)) {
+      m_playerviews.find (wm_humanPlayer)->second->updateCardView (index);
+    }
   }
 }
 
 void PokerTable::onDealClicked (bool checked) {
-  printf ("Deal clicked.\n");
-
   wm_game->deal ();
   std::map<const Player*, PlayerView*>::iterator iter;
   for (iter = m_playerviews.begin (); iter != m_playerviews.end (); ++iter) {
-    iter->second->updateCardViews ();
+    iter->second->updateCardViews (iter->first->isHuman ());
+    iter->second->updateMoney ();
   }
+  updatePotView ();
 }
 
 void PokerTable::onDoneClicked (bool checked) {
-  printf ("Done clicked.\n");
-
   continueGame ();
 }
 
@@ -162,13 +157,21 @@ void PokerTable::onEnableClickables (int mask) {
     wm_done->setEnabled (true);
 }
 
+void PokerTable::onUpdateCardViews (const Player* player) {
+  m_playerviews.find (player)->second->updateCardViews (true);
+}
+
 void PokerTable::updatePlayerAction (const Player* player, QString str) {
   m_playerviews.find (player)->second->updateAction (str);
 }
 
 void PokerTable::updatePlayerMoney (const Player* player) {
+  m_playerviews.find (player)->second->updateMoney ();
+  updatePotView ();
+}
+
+void PokerTable::updatePotView (void) {
   QString str;
   str.sprintf ("\342\202\254 %d", wm_game->pot ());
   wm_pot->setText (str);
-  m_playerviews.find (player)->second->updateMoney ();
 }

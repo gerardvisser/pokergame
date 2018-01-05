@@ -30,6 +30,7 @@ GameThread::GameThread (PokerTable* pokertable) : wm_pokertable (pokertable) {
   connect (this, SIGNAL (playerAction (const Player*, QString)), pokertable, SLOT (updatePlayerAction (const Player*, QString)));
   connect (this, SIGNAL (playerMoneyUpdated (const Player*)), pokertable, SLOT (updatePlayerMoney (const Player*)));
   connect (this, SIGNAL (enableClickables (int)), pokertable, SLOT (onEnableClickables (int)));
+  connect (this, SIGNAL (updateCardViews (const Player*)), pokertable, SLOT (onUpdateCardViews (const Player*)));
 }
 
 GameThread::~GameThread (void) {
@@ -116,8 +117,8 @@ void GameThread::doCardReplacement (void) {
     else
       action.sprintf ("replaces %d cards", numberOfCardsToReplace);
     emit playerAction (player, action);
-    if (player->isHuman ()) {
-      /* TODO: Update the player's cards on the screen.  */
+    if (player->isHuman () && numberOfCardsToReplace > 0) {
+      emit updateCardViews (player);
     }
 
     /* TODO: Wait for a second and then dehighlight player...  */

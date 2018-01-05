@@ -2,7 +2,7 @@
    Author:  Gerard Visser
    e-mail:  visser.gerard(at)gmail.com
 
-   Copyright (C) 2017 Gerard Visser.
+   Copyright (C) 2017, 2018 Gerard Visser.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,8 +36,9 @@ private:
 public:
   explicit PlayerView (const Player* player, const QFont& font, QWidget* parent);
 
-  void updateCardViews (void);
   void updateAction (QString str);
+  void updateCardView (int index);
+  void updateCardViews (bool showFront);
   void updateMoney (void);
 
 signals:
