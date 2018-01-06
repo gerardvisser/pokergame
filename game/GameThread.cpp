@@ -21,7 +21,13 @@
 #include <pokerengine/CardDrawIterator.h>
 #include "GameThread.h"
 
+#define PLAYER_COUNT    4
 #define RAISE_COUNT_MAX 3
+
+#define STATE_DEAL             1
+#define STATE_BETTING_1        2
+#define STATE_CARD_REPLACEMENT 3
+#define STATE_BETTING_2        4
 
 class TerminationRequestException {};
 
@@ -33,6 +39,9 @@ GameThread::GameThread (PokerTable* pokertable) : wm_pokertable (pokertable), m_
   connect (this, SIGNAL (playerMoneyUpdated (const Player*)), pokertable, SLOT (updatePlayerMoney (const Player*)));
   connect (this, SIGNAL (enableClickables (int)), pokertable, SLOT (onEnableClickables (int)));
   connect (this, SIGNAL (updateCardViews (const Player*)), pokertable, SLOT (onUpdateCardViews (const Player*)));
+  connect (this, SIGNAL (determineWinners (int)), pokertable, SLOT (onDetermineWinners (int)));
+  connect (this, SIGNAL (dehighlight (const Player*)), pokertable, SLOT (onDehighlight (const Player*)));
+  connect (this, SIGNAL (highlight (const Player*)), pokertable, SLOT (onHighlight (const Player*)));
 }
 
 GameThread::~GameThread (void) {
@@ -48,14 +57,14 @@ void GameThread::checkForTerminationRequest (void) {
     throw TerminationRequestException ();
 }
 
-void GameThread::doBetting (void) {
+int GameThread::doBetting(int activePlayers) {
   Game* game = wm_pokertable->game ();
   BetIterator iter (game);
   int raiseCount = 0;
 
   while (iter.hasNext ()) {
     Player* player = iter.next ();
-    /* TODO: Highlight player?  */
+    emit highlight (player);
     const int callAmount = game->maxBet () - player->totalBet ();
 
     if (player->isHuman ()) {
@@ -71,6 +80,7 @@ void GameThread::doBetting (void) {
     if (bet < callAmount) {
       player->setActive (false);
       action = "folds";
+      --activePlayers;
     } else if (bet == 0) {
       if (game->maxBet () > 0) {
         action = "checks";
@@ -95,8 +105,10 @@ void GameThread::doBetting (void) {
     }
     emit playerAction (player, action);
 
-    /* TODO: Wait for a second and then dehighlight player...  */
+    sleep (1);
+    emit dehighlight (player);
   }
+  return activePlayers;
 }
 
 void GameThread::doCardReplacement (void) {
@@ -105,7 +117,7 @@ void GameThread::doCardReplacement (void) {
 
   while (iter.hasNext ()) {
     Player* player = iter.next ();
-    /* TODO: Highlight player?  */
+    emit highlight (player);
 
     if (player->isHuman ()) {
       HumanPlayer* humanPlayer = dynamic_cast<HumanPlayer*> (player);
@@ -130,7 +142,8 @@ void GameThread::doCardReplacement (void) {
       emit updateCardViews (player);
     }
 
-    /* TODO: Wait for a second and then dehighlight player...  */
+    sleep (1);
+    emit dehighlight (player);
   }
 }
 
@@ -158,6 +171,43 @@ void GameThread::requestTermination (void) {
 
 void GameThread::run (void) {
   try {
+
+    int activePlayers;
+    int state = STATE_DEAL;
+
+    while (true) {
+      switch (state) {
+      case STATE_DEAL:
+        state = STATE_BETTING_1;
+        emit enableClickables (ENABLE_DEAL);
+        waitForHumanPlayer ();
+        break;
+
+      case STATE_BETTING_1:
+        activePlayers = doBetting (PLAYER_COUNT);
+        if (activePlayers == 1) {
+          emit determineWinners (activePlayers);
+          state = STATE_DEAL;
+        } else if (wm_pokertable->game ()->maxBet () == 0) {
+          state = STATE_DEAL;
+        } else {
+          state = STATE_CARD_REPLACEMENT;
+        }
+        break;
+
+      case STATE_CARD_REPLACEMENT:
+        doCardReplacement ();
+        state = STATE_BETTING_2;
+        break;
+
+      case STATE_BETTING_2:
+        activePlayers = doBetting (activePlayers);
+        emit determineWinners (activePlayers);
+        state = STATE_DEAL;
+        break;
+      }
+    }
+
   } catch (TerminationRequestException ignore) {
   }
 }

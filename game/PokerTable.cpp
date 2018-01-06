@@ -137,8 +137,19 @@ void PokerTable::onDealClicked (bool checked) {
   for (iter = m_playerviews.begin (); iter != m_playerviews.end (); ++iter) {
     iter->second->updateCardViews (iter->first->isHuman ());
     iter->second->updateMoney ();
+    iter->second->updateAction ("");
   }
   updatePotView ();
+  updatePlayerAction (wm_game->dealer (), "deals");
+  continueGame ();
+}
+
+void PokerTable::onDehighlight (const Player* player) {
+  m_playerviews.find (player)->second->dehighlight ();
+}
+
+void PokerTable::onDetermineWinners (int activePlayers) {
+  printf ("PokerTable::onDetermineWinners\n");
 }
 
 void PokerTable::onDoneClicked (bool checked) {
@@ -156,6 +167,10 @@ void PokerTable::onEnableClickables (int mask) {
     wm_deal->setEnabled (true);
   if ((mask & ENABLE_DONE) != 0)
     wm_done->setEnabled (true);
+}
+
+void PokerTable::onHighlight (const Player* player) {
+  m_playerviews.find (player)->second->highlight ();
 }
 
 void PokerTable::onUpdateCardViews (const Player* player) {

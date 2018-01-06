@@ -36,7 +36,9 @@ private:
 public:
   explicit PlayerView (const Player* player, const QFont& font, QWidget* parent);
 
-  void updateAction (QString str);
+  void dehighlight (void);
+  void highlight (void);
+  void updateAction (const QString& str);
   void updateCardView (int index);
   void updateCardViews (bool showFront);
   void updateMoney (void);

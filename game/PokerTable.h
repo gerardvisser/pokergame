@@ -63,8 +63,11 @@ private slots:
   void onCallClicked (bool checked = false);
   void onCardClicked (int index);
   void onDealClicked (bool checked = false);
+  void onDehighlight (const Player* player);
+  void onDetermineWinners (int activePlayers);
   void onDoneClicked (bool checked = false);
   void onEnableClickables (int mask);
+  void onHighlight (const Player* player);
   void onUpdateCardViews (const Player* player);
   void updatePlayerAction (const Player* player, QString str);
   void updatePlayerMoney (const Player* player);

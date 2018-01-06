@@ -43,14 +43,17 @@ public:
   void run (void) override;
 
 signals:
+  void dehighlight (const Player* player);
+  void determineWinners (int activePlayers);
   void enableClickables (int mask);
+  void highlight (const Player* player);
   void playerAction (const Player* player, QString str);
   void playerMoneyUpdated (const Player* player);
   void updateCardViews (const Player* player);
 
 private:
   void checkForTerminationRequest (void);
-  void doBetting (void);
+  int doBetting (int activePlayers);
   void doCardReplacement (void);
   void enableButtonsForBetting (bool canCall, bool canRaise);
   void waitForHumanPlayer (void);

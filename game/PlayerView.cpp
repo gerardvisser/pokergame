@@ -74,7 +74,15 @@ PlayerView::PlayerView (const Player* player, const QFont& font, QWidget* parent
   //wm_money->setStyleSheet ("border: 1px solid #E00000;");
 }
 
-void PlayerView::updateAction (QString str) {
+void PlayerView::dehighlight (void) {
+  setFrameShape (QFrame::NoFrame);
+}
+
+void PlayerView::highlight (void) {
+  setFrameShape (QFrame::Box);
+}
+
+void PlayerView::updateAction (const QString& str) {
   wm_action->setText (str);
 }
 
