@@ -76,6 +76,31 @@ const Player* Game::dealer (void) const {
   return m_players[m_dealerIndex];
 }
 
+std::vector<const Player*>* Game::determineWinners (void) {
+  std::vector<Player*>* winners = new std::vector<Player*> ();
+
+  int handRankingWinner = 0;
+  for (int i = 0; i < PLAYER_COUNT; ++i) {
+    if (m_players[i]->isActive ()) {
+      if (handRankingWinner < m_players[i]->handRanking ()) {
+        winners->clear ();
+        winners->push_back (m_players[i]);
+        handRankingWinner = m_players[i]->handRanking ();
+      } else if (handRankingWinner == m_players[i]->handRanking ()) {
+        winners->push_back (m_players[i]);
+      }
+    }
+  }
+
+  int moneyWon = m_pot / winners->size ();
+  for (Player* player : *winners) {
+    player->addMoney (moneyWon);
+  }
+  m_pot = 0;
+
+  return reinterpret_cast<std::vector<const Player*>*> (winners);
+}
+
 int Game::maxBet (void) const {
   return m_maxBet;
 }

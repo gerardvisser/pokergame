@@ -28,6 +28,7 @@
 #define PADDING_LEFT     20
 #define PADDING_TOP      20
 
+#define PLAYER_COUNT     4
 #define RAISE_AMOUNT_MAX 3
 
 PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game (game), m_cardClickEnabled (false) {
@@ -35,7 +36,7 @@ PokerTable::PokerTable (Game* game, QWidget* parent) : QWidget (parent), wm_game
   QFont font ("FreeSans", 12);
 
   Player* const * players = game->players ();
-  for (int i = 0; i < 4; ++i) {
+  for (int i = 0; i < PLAYER_COUNT; ++i) {
     PlayerView* playerView = new PlayerView (players[i], font, this);
     playerView->move (PADDING_LEFT, PADDING_TOP + playerViewHeight * i);
     m_playerviews[players[i]] = playerView;
@@ -149,7 +150,22 @@ void PokerTable::onDehighlight (const Player* player) {
 }
 
 void PokerTable::onDetermineWinners (int activePlayers) {
-  printf ("PokerTable::onDetermineWinners\n");
+  if (activePlayers > 1) {
+    for (const std::pair<const Player*, PlayerView*>& entry : m_playerviews) {
+      if (entry.first->isActive ()) {
+        entry.second->updateCardViews (true);
+        entry.second->updateAction ("");
+      }
+    }
+  }
+  std::vector<const Player*>* winners = wm_game->determineWinners ();
+  for (const Player* player : *winners) {
+    PlayerView* playerView = m_playerviews.find (player)->second;
+    playerView->updateAction ("wins");
+    playerView->updateMoney ();
+  }
+  delete winners;
+  updatePotView ();
 }
 
 void PokerTable::onDoneClicked (bool checked) {

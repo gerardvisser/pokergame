@@ -46,6 +46,7 @@ public:
   int chipValue (void) const;
   void deal (void);
   const Player* dealer (void) const;
+  std::vector<const Player*>* determineWinners (void);
   int maxBet (void) const;
   Player* const * players (void) const;
   int pot (void) const;
