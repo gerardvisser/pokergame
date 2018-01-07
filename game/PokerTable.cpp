@@ -112,9 +112,9 @@ void PokerTable::onBetClicked (bool checked) {
       wm_call->setEnabled (false);
     QString action;
     if (wm_game->maxBet () == 0)
-      action.sprintf ("bets \342\202\254 %d", r * wm_game->chipValue ());
+      action.sprintf ("bets %lc %d", 0x20AC, r * wm_game->chipValue ());
     else
-      action.sprintf ("raises \342\202\254 %d", r * wm_game->chipValue ());
+      action.sprintf ("raises %lc %d", 0x20AC, r * wm_game->chipValue ());
     updatePlayerAction (wm_humanPlayer, action);
   }
 }
@@ -204,6 +204,6 @@ void PokerTable::updatePlayerMoney (const Player* player) {
 
 void PokerTable::updatePotView (void) {
   QString str;
-  str.sprintf ("\342\202\254 %d", wm_game->pot ());
+  str.sprintf ("%lc %d", 0x20AC, wm_game->pot ());
   wm_pot->setText (str);
 }

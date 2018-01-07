@@ -90,10 +90,10 @@ int GameThread::doBetting(int activePlayers) {
     } else {
       if (game->maxBet () == 0) {
         /* callAmount must be 0 here.  */
-        action.sprintf ("bets \342\202\254 %d", bet * game->chipValue ());
+        action.sprintf ("bets %lc %d", 0x20AC, bet * game->chipValue ());
         game->addToMaxBet (bet);
       } else if (bet > callAmount) {
-        action.sprintf ("raises \342\202\254 %d", (bet - callAmount) * game->chipValue ());
+        action.sprintf ("raises %lc %d", 0x20AC, (bet - callAmount) * game->chipValue ());
         game->addToMaxBet (bet - callAmount);
         ++raiseCount;
       } else {

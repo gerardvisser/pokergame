@@ -75,11 +75,11 @@ PlayerView::PlayerView (const Player* player, const QFont& font, QWidget* parent
 }
 
 void PlayerView::dehighlight (void) {
-  setFrameShape (QFrame::NoFrame);
+  setFrameStyle (QFrame::NoFrame | QFrame::Plain);
 }
 
 void PlayerView::highlight (void) {
-  setFrameShape (QFrame::Box);
+  setFrameStyle (QFrame::Panel | QFrame::Raised);
 }
 
 void PlayerView::updateAction (const QString& str) {
@@ -98,6 +98,6 @@ void PlayerView::updateCardViews (bool showFront) {
 
 void PlayerView::updateMoney (void) {
   QString str;
-  str.sprintf ("\342\202\254 %d", m_player->money ());
+  str.sprintf ("%lc %d", 0x20AC, m_player->money ());
   wm_money->setText (str);
 }
